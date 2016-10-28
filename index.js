@@ -67,10 +67,22 @@ class Lang {
                 }
             } catch (e) {
                 this._locale = this._defaultLocale;
-                res.status(403).end('Invalid locale format');
+                return this.errorHandler(req, res, e, next);
             }
             next();
         };
+    }
+
+    /**
+     * An error handler for the middleware, that can be overridden with custom functionality.
+     * Default behavior is to terminate here with a 403 status code.
+     * @param {ClientRequest} req   Request object from the web server
+     * @param {ServerResponse} res  Response object from the web server
+     * @param {Error} e             Error thrown during middleware evaluation
+     * @param {function} next       Function chain, that allows to continue execution if desired.
+     */
+    errorHandler(req, res, e, next) {
+        res.status(403).end('Invalid locale format');
     }
 
     /**
