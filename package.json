@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Cheevr/Server.git"
+    "url": "git+ssh://git@github.com/Cheevr/Lang.git"
   },
   "keywords": [
     "express",
@@ -18,7 +18,18 @@
   "author": "Ravi Gairola <ravi@cheevr.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Cheevr/Server/issues"
+    "url": "https://github.com/Cheevr/Lang/issues"
+  },
+  "scripts": {
+    "start": "type node-dev 2> /dev/null && node-dev . || node .",
+    "test": "istanbul cover _mocha -- --recursive"
+  },
+  "devDependencies": {
+    "chai": "^3",
+    "express": "^4.14.0",
+    "istanbul": "^0.4",
+    "mocha": "^3",
+    "supertest": "^2.0.1"
   },
   "dependencies": {
     "config": "https://github.com/Cheevr/Config.git"
