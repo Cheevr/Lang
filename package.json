@@ -1,0 +1,26 @@
+{
+  "name": "lang",
+  "version": "1.0.0",
+  "description": "An i18n library that allows integration with express and jade",
+  "private": true,
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Cheevr/Server.git"
+  },
+  "keywords": [
+    "express",
+    "jade",
+    "i18n",
+    "language",
+    "translation"
+  ],
+  "author": "Ravi Gairola <ravi@cheevr.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Cheevr/Server/issues"
+  },
+  "dependencies": {
+    "config": "https://github.com/Cheevr/Config.git"
+  }
+}
