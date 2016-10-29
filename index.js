@@ -157,7 +157,7 @@ class Lang {
         if (path.isAbsolute(dir)) {
             dir = path.relative(cwd, dir);
         }
-        if (this._paths.indexOf(dir)) {
+        if (this._paths.indexOf(dir) !== -1) {
             return;
         }
         this._paths.push(dir);
