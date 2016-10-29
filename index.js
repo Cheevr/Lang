@@ -178,7 +178,6 @@ class Lang {
             let ext = parts[2];
             let name = parts[1];
             let section = parts[0];
-            console.log(section, name, ext);
             if (ext == 'js' || ext == 'json') {
                 let data = require(path.join(dir, file));
                 this._dictionaries[name] = this._dictionaries[name] || {};
