@@ -154,8 +154,8 @@ class Lang {
                 console.log(section, name, ext);
                 if (ext == 'js' || ext == 'json') {
                     let data = require(path.join(dir, file));
+                    this._dictionaries[name] = this._dictionaries[name] || {};
                     if (section == 'default') {
-                        this._dictionaries[name] = this._dictionaries[name] || {};
                         Object.assign(this._dictionaries[name], data);
                     } else {
                         this._dictionaries[name][section] = this._dictionaries[name][section] || {};
