@@ -28,7 +28,7 @@ class Lang {
         this._paramName = config.locale && config.locale.paramName || 'lang';
         this._defaultLocale = config.locale && config.locale.default || 'en-US';
         this._locale = this._defaultLocale;
-        this._paths = config.paths && config.paths.lang || 'lang';
+        this._paths = config.paths && config.paths.lang || process.env.NODE_LANG_DIR || 'lang';
         this._paths = Array.isArray(this._paths) ? this._paths : [this._paths];
         this.reload();
     }
