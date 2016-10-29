@@ -28,6 +28,8 @@ class Lang {
         this._paramName = config.locale && config.locale.paramName || 'lang';
         this._defaultLocale = config.locale && config.locale.default || 'en-US';
         this._locale = this._defaultLocale;
+        this._paths = config.paths && config.paths.lang || 'lang';
+        this._paths = Array.isArray(this._paths) ? this._paths : [this._paths];
         this.reload();
     }
 
@@ -135,37 +137,58 @@ class Lang {
      */
     reload() {
         this._dictionaries = {};
-        let langPaths = config.paths && config.paths.lang || 'lang';
-        langPaths = Array.isArray(langPaths) || [langPaths];
-        for (let langPath of langPaths) {
-            let dir = process.env.NODE_LANG_DIR || path.join(cwd, langPath);
-            let files = fs.readdirSync(dir);
-            for (let file of files) {
-                let parts = file.split('.');
-                if (parts.length == 2) {
-                    parts.unshift('default');
-                }
-                if (parts.length != 3) {
-                    throw new Error('An invalid language file has been detected:' + file);
-                }
-                let ext = parts[2];
-                let name = parts[1];
-                let section = parts[0];
-                console.log(section, name, ext);
-                if (ext == 'js' || ext == 'json') {
-                    let data = require(path.join(dir, file));
-                    this._dictionaries[name] = this._dictionaries[name] || {};
-                    if (section == 'default') {
-                        Object.assign(this._dictionaries[name], data);
-                    } else {
-                        this._dictionaries[name][section] = this._dictionaries[name][section] || {};
-                        Object.assign(this._dictionaries[name][section], data);
-                    }
-                }
-            }
+        for (let path of this._paths) {
+            this._load(path);
         }
         if (!this._dictionaries[this._defaultLocale]) {
             throw new Error('The language module has been loaded without a default language!');
+        }
+    }
+
+    /**
+     * Adds a directory from which to load configuration from. This allows libraries
+     * that have their own translation files to set a directory for them without requiring
+     * the config object. Note that if a directory has been scanned before it will not be
+     * scanned again, unless reload is called which will include the previously added
+     * directories.
+     * @param {string} dir  The directory from which to load the scripts from
+     */
+    addDirectory(dir) {
+        if (path.isAbsolute(dir)) {
+            dir = path.relative(cwd, dir);
+        }
+        if (this._paths.indexOf(dir)) {
+            return;
+        }
+        this._paths.push(dir);
+        this._load(dir);
+    }
+
+    _load(langPath) {
+        let dir = process.env.NODE_LANG_DIR || path.join(cwd, langPath);
+        let files = fs.readdirSync(dir);
+        for (let file of files) {
+            let parts = file.split('.');
+            if (parts.length == 2) {
+                parts.unshift('default');
+            }
+            if (parts.length != 3) {
+                throw new Error('An invalid language file has been detected:' + file);
+            }
+            let ext = parts[2];
+            let name = parts[1];
+            let section = parts[0];
+            console.log(section, name, ext);
+            if (ext == 'js' || ext == 'json') {
+                let data = require(path.join(dir, file));
+                this._dictionaries[name] = this._dictionaries[name] || {};
+                if (section == 'default') {
+                    Object.assign(this._dictionaries[name], data);
+                } else {
+                    this._dictionaries[name][section] = this._dictionaries[name][section] || {};
+                    Object.assign(this._dictionaries[name][section], data);
+                }
+            }
         }
     }
 }
