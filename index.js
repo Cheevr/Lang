@@ -25,10 +25,11 @@ String.prototype.format = function () {
 
 class Lang {
     constructor() {
-        this._paramName = config.locale && config.locale.paramName || 'lang';
-        this._defaultLocale = config.locale && config.locale.default || 'en-US';
+        config.addDefaultConfig(path.join(__dirname, 'config/locale.js'));
+        this._paramName = config.locale.paramName;
+        this._defaultLocale = config.locale.default;
         this._locale = this._defaultLocale;
-        this._paths = config.paths && config.paths.lang || process.env.NODE_LANG_DIR || 'lang';
+        this._paths = process.env.NODE_LANG_DIR || config.locale.paths;
         this._paths = Array.isArray(this._paths) ? this._paths : [this._paths];
         this.reload();
     }
