@@ -50,6 +50,13 @@ describe('Lang', () => {
         request(app).get('/?lang=no-NO').expect(200, 'en-US').end(done);
     });
 
+    it('should fall back to a default for a specific locale group if it doesn\'t exist', done => {
+        var app = express();
+        app.use(lang.middleware());
+        app.get('/', (req, res) => res.end(lang.locale));
+        request(app).get('/?lang=en-GB').expect(200, 'en-US').end(done);
+    });
+
     it('should respond with an error if a locale is malformatted', done => {
         var app = express();
         app.use(lang.middleware());
@@ -59,5 +66,10 @@ describe('Lang', () => {
 
     it('should add a "format" function to all strings', () => {
         expect('This is a {0}'.format('test')).to.equal('This is a test');
+    });
+
+    it('should process a file and translate all placeholders', () => {
+        let result = lang.process('Going to be R.action with a placeholder', 'en-US');
+        expect(result).to.equal('Going to be replaced with a placeholder');
     });
 });

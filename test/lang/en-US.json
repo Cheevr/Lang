@@ -1,4 +1,5 @@
 {
   "source": "plain json",
-  "val1": "val1"
+  "val1": "val1",
+  "action": "replaced"
 }

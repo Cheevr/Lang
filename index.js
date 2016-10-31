@@ -1,5 +1,6 @@
 var config = require('config');
 var fs = require('fs');
+var he = require('he');
 var path = require('path');
 
 
@@ -28,9 +29,11 @@ class Lang {
         config.addDefaultConfig(path.join(__dirname, 'config/locale.js'));
         this._paramName = config.locale.paramName;
         this._defaultLocale = config.locale.default;
+        this._localeDefaults = config.locale.localeDefaults;
         this._locale = this._defaultLocale;
         this._paths = process.env.NODE_LANG_DIR || config.locale.paths;
         this._paths = Array.isArray(this._paths) ? this._paths : [this._paths];
+        this._cached = {};
         this.reload();
     }
 
@@ -68,12 +71,53 @@ class Lang {
                         this.locale = candidate;
                     }
                 }
+                req.locale = this._locale;
             } catch (e) {
-                this._locale = this._defaultLocale;
+                req.locale = this._locale = this._defaultLocale;
                 return this.errorHandler(req, res, e, next);
             }
             next();
         };
+    }
+
+    /**
+     * Will process a given string and replace all occurrences of placeholders in the format
+     * of R.token.
+     * @param {string} contents     Any String with placeholders
+     * @param {string} locale       Either the short or long form of a locale (e.g. en-US)
+     * @param {string} [identifier] When given a unique identifier the module will cache a conversion
+     * @param {boolean} [force]     When using an identifier this will force a refresh
+     * @returns {string}    The converted data
+     */
+    process(contents, locale, identifier, force) {
+        locale = this._getLocale(locale);
+        if (!force && this._cached[identifier] && this._cached[identifier][locale]) {
+            return this._cached[identifier];
+        }
+        let prefix = 'R.';
+        let stopCond = /[^\.\w_\-]/;
+        let result = '';
+        let copied = 0;
+        var i = contents.indexOf(prefix);
+        while ((i !== -1)) {
+            var endMatch, length, token, key;
+            var tail = contents.substr(i);
+            endMatch = tail.match(stopCond);
+            length = endMatch == null ? tail.length : length = endMatch.index + endMatch[0].length - 1;
+            token = tail.substr(0, length);
+            key = token.substr(prefix.length);
+            var next = contents.indexOf(prefix, i + length + 1);
+
+            result += contents.substring(copied, i);
+            if (this._dictionaries[locale][key] !== undefined) {
+                result += he.encode(this._dictionaries[locale][key], {useNamedReferences: true});
+            }
+            result += contents.substring(i + length, next == -1 ? contents.length : next);
+            i = copied = next;
+        }
+        this._cached[identifier] = this._cached[identifier] || {}
+        this._cached[identifier][locale] = result;
+        return result;
     }
 
     /**
@@ -90,6 +134,7 @@ class Lang {
 
     /**
      * A helper function that checks whether a language file has been found for a given locale.
+     * Will resort to using the only the first section of a locale if an exact match couldn't be found.
      * @param {string} locale The language to check in ISO format (e.g. en or en-US)
      * @returns {string|boolean} The full available locale (e.g. en-US) or false if it doesn't exist.
      */
@@ -99,6 +144,11 @@ class Lang {
         }
         if (this._dictionaries[locale]) {
             return locale;
+        }
+        locale = locale.substr(0, 2);
+        let localeDefault = this._localeDefaults[locale];
+        if (localeDefault && this._dictionaries[localeDefault]) {
+            return localeDefault;
         }
         for (let available in this._dictionaries) {
             if (available.startsWith(locale)) {
