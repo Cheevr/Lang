@@ -111,7 +111,6 @@ class Lang {
             key = token.substr(prefix.length);
             var next = contents.indexOf(prefix, i + length + 1);
             result += contents.substring(copied, i);
-            console.log(key, dictionary)
             if (dictionary[key] !== undefined) {
                 result += he.encode(dictionary[key], {useNamedReferences: true});
             } else {

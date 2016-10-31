@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "config": "https://github.com/Cheevr/Config.git",
-    "flat": "^2.0.1",
+    "flat": "^2",
     "he": "^1"
   }
 }
