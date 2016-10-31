@@ -68,8 +68,13 @@ describe('Lang', () => {
         expect('This is a {0}'.format('test')).to.equal('This is a test');
     });
 
-    it('should process a file and translate all placeholders', () => {
+    it('should process a string and translate all placeholders', () => {
         let result = lang.process('Going to be R.action with a placeholder', 'en-US');
         expect(result).to.equal('Going to be replaced with a placeholder');
+    });
+
+    it('should support multi level placeholder', () => {
+        let result = lang.process('Going to be R.nested.action with a placeholder', 'en-US');
+        expect(result).to.equal('Going to be improved with a placeholder');
     });
 });

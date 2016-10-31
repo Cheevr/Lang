@@ -1,6 +1,6 @@
 {
   "name": "lang",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An i18n library that allows integration with express and jade",
   "private": true,
   "main": "index.js",
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "config": "https://github.com/Cheevr/Config.git",
+    "flat": "^2.0.1",
     "he": "^1"
   }
 }

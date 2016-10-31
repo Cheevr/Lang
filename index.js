@@ -1,4 +1,5 @@
 var config = require('config');
+var flat = require('flat');
 var fs = require('fs');
 var he = require('he');
 var path = require('path');
@@ -6,6 +7,8 @@ var path = require('path');
 
 const cwd = path.dirname(require.main.filename);
 const isoRegExp = /^[a-z]{2}(-[A-Z]{2})?$/;
+const prefix = 'R.';
+const stopCond = /[^\.\w_\-]/;
 
 /**
  * A helper function that will allow jade and javascript to use placeholder in a string (such as {0} and {1}).
@@ -91,14 +94,14 @@ class Lang {
      */
     process(contents, locale, identifier, force) {
         locale = this._getLocale(locale);
+        locale = locale || this._defaultLocale;
         if (!force && this._cached[identifier] && this._cached[identifier][locale]) {
-            return this._cached[identifier];
+            return this._cached[identifier][locale];
         }
-        let prefix = 'R.';
-        let stopCond = /[^\.\w_\-]/;
         let result = '';
         let copied = 0;
-        var i = contents.indexOf(prefix);
+        let i = contents.indexOf(prefix);
+        let dictionary = flat(this._dictionaries[locale]);
         while ((i !== -1)) {
             var endMatch, length, token, key;
             var tail = contents.substr(i);
@@ -107,16 +110,20 @@ class Lang {
             token = tail.substr(0, length);
             key = token.substr(prefix.length);
             var next = contents.indexOf(prefix, i + length + 1);
-
             result += contents.substring(copied, i);
-            if (this._dictionaries[locale][key] !== undefined) {
-                result += he.encode(this._dictionaries[locale][key], {useNamedReferences: true});
+            console.log(key, dictionary)
+            if (dictionary[key] !== undefined) {
+                result += he.encode(dictionary[key], {useNamedReferences: true});
+            } else {
+                console.log('Translation missing for key', key)
             }
             result += contents.substring(i + length, next == -1 ? contents.length : next);
             i = copied = next;
         }
-        this._cached[identifier] = this._cached[identifier] || {}
-        this._cached[identifier][locale] = result;
+        if (identifier) {
+            this._cached[identifier] = this._cached[identifier] || {}
+            this._cached[identifier][locale] = result;
+        }
         return result;
     }
 
