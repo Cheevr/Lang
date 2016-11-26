@@ -102,6 +102,9 @@ class Lang {
         let copied = 0;
         let i = contents.indexOf(prefix);
         let dictionary = flat(this._dictionaries[locale]);
+        if (i==-1) {
+            return contents;
+        }
         while ((i !== -1)) {
             var endMatch, length, token, key;
             var tail = contents.substr(i);

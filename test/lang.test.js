@@ -77,4 +77,9 @@ describe('Lang', () => {
         let result = lang.process('Going to be R.nested.action with a placeholder', 'en-US');
         expect(result).to.equal('Going to be improved with a placeholder');
     });
+
+    it('should return an string without any tokens as is', () => {
+        let result = lang.process('No placeholders here', 'en-US');
+        expect(result).to.equal('No placeholders here');
+    });
 });
