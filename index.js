@@ -1,22 +1,23 @@
-var config = require('config');
-var flat = require('flat');
-var fs = require('fs');
-var he = require('he');
-var path = require('path');
+const config = require('config');
+const flat = require('flat');
+const fs = require('fs');
+const he = require('he');
+const path = require('path');
 
 
 const cwd = path.dirname(require.main.filename);
 const isoRegExp = /^[a-z]{2}(-[A-Z]{2})?$/;
 const prefix = 'R.';
 const stopCond = /[^\.\w_\-]/;
+const formatRegExp = /\{\{|}}|\{(\d+)}/g;
 
 /**
  * A helper function that will allow jade and javascript to use placeholder in a string (such as {0} and {1}).
  * @returns {string}
  */
 String.prototype.format = function () {
-    var args = arguments;
-    return this.replace(/\{\{|}}|\{(\d+)}/g, function (m, n) {
+    let args = arguments;
+    return this.replace(formatRegExp, function (m, n) {
         if (m == "{{") {
             return "{";
         }
@@ -57,9 +58,7 @@ class Lang {
                             priority: langParts[1] && parseInt(langParts[1]) || 1
                         }
                     });
-                    langs.sort((a, b) => {
-                        return a.priority - b.priority;
-                    });
+                    langs.sort((a, b) => a.priority - b.priority);
                     for (let lang of langs) {
                         let locale = this._getLocale(lang.code);
                         if (locale) {
@@ -106,13 +105,13 @@ class Lang {
             return contents;
         }
         while ((i !== -1)) {
-            var endMatch, length, token, key;
-            var tail = contents.substr(i);
+            let endMatch, length, token, key;
+            let tail = contents.substr(i);
             endMatch = tail.match(stopCond);
             length = endMatch == null ? tail.length : length = endMatch.index + endMatch[0].length - 1;
             token = tail.substr(0, length);
             key = token.substr(prefix.length);
-            var next = contents.indexOf(prefix, i + length + 1);
+            let next = contents.indexOf(prefix, i + length + 1);
             result += contents.substring(copied, i);
             if (dictionary[key] !== undefined) {
                 result += he.encode(dictionary[key], {useNamedReferences: true});
@@ -123,7 +122,7 @@ class Lang {
             i = copied = next;
         }
         if (identifier) {
-            this._cached[identifier] = this._cached[identifier] || {}
+            this._cached[identifier] = this._cached[identifier] || {};
             this._cached[identifier][locale] = result;
         }
         return result;
@@ -226,26 +225,28 @@ class Lang {
 
     _load(langPath) {
         let dir = process.env.NODE_LANG_DIR || path.join(cwd, langPath);
-        let files = fs.readdirSync(dir);
-        for (let file of files) {
-            let parts = file.split('.');
-            if (parts.length == 2) {
-                parts.unshift('default');
-            }
-            if (parts.length != 3) {
-                throw new Error('An invalid language file has been detected:' + file);
-            }
-            let ext = parts[2];
-            let name = parts[1];
-            let section = parts[0];
-            if (ext == 'js' || ext == 'json') {
-                let data = require(path.join(dir, file));
-                this._dictionaries[name] = this._dictionaries[name] || {};
-                if (section == 'default') {
-                    Object.assign(this._dictionaries[name], data);
-                } else {
-                    this._dictionaries[name][section] = this._dictionaries[name][section] || {};
-                    Object.assign(this._dictionaries[name][section], data);
+        if (fs.existsSync(dir)) {
+            let files = fs.readdirSync(dir);
+            for (let file of files) {
+                let parts = file.split('.');
+                if (parts.length == 2) {
+                    parts.unshift('default');
+                }
+                if (parts.length != 3) {
+                    throw new Error('An invalid language file has been detected:' + file);
+                }
+                let ext = parts[2];
+                let name = parts[1];
+                let section = parts[0];
+                if (ext == 'js' || ext == 'json') {
+                    let data = require(path.join(dir, file));
+                    this._dictionaries[name] = this._dictionaries[name] || {};
+                    if (section == 'default') {
+                        Object.assign(this._dictionaries[name], data);
+                    } else {
+                        this._dictionaries[name][section] = this._dictionaries[name][section] || {};
+                        Object.assign(this._dictionaries[name][section], data);
+                    }
                 }
             }
         }
