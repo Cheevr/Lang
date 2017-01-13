@@ -1,4 +1,4 @@
-const config = require('config');
+const config = require('cheevr-config');
 const flat = require('flat');
 const fs = require('fs');
 const he = require('he');
