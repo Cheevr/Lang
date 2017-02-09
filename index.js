@@ -1,4 +1,4 @@
-const config = require('cheevr-config');
+const config = require('cheevr-config').addDefaultConfig(__dirname, 'config/locale.js');
 const flat = require('flat');
 const fs = require('fs');
 const he = require('he');
@@ -30,7 +30,6 @@ String.prototype.format = function () {
 
 class Lang {
     constructor() {
-        config.addDefaultConfig(path.join(__dirname, 'config/locale.js'));
         this._paramName = config.locale.paramName;
         this._defaultLocale = config.locale.default;
         this._localeDefaults = config.locale.localeDefaults;
