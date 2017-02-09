@@ -5,7 +5,7 @@ const he = require('he');
 const path = require('path');
 
 
-const cwd = path.dirname(require.main.filename);
+const cwd = process.cwd();
 const isoRegExp = /^[a-z]{2}(-[A-Z]{2})?$/;
 const prefix = 'R.';
 const stopCond = /[^\.\w_\-]/;
@@ -210,20 +210,18 @@ class Lang {
      * scanned again, unless reload is called which will include the previously added
      * directories.
      * @param {string} dir  The directory from which to load the scripts from
+     * @param {string} paths    Additional path components that will be appended to the first param
      */
-    addDirectory(dir) {
-        if (path.isAbsolute(dir)) {
-            dir = path.relative(cwd, dir);
-        }
-        if (this._paths.indexOf(dir) !== -1) {
-            return;
-        }
+    extend(dir, ...paths) {
+        dir = path.join(dir, ...paths);
         this._paths.push(dir);
         this._load(dir);
+        return this;
     }
 
     _load(langPath) {
-        let dir = process.env.NODE_LANG_DIR || path.join(cwd, langPath);
+
+        let dir = path.isAbsolute(langPath) ? langPath : path.join(cwd, langPath);
         if (fs.existsSync(dir)) {
             let files = fs.readdirSync(dir);
             for (let file of files) {
