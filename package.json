@@ -1,6 +1,6 @@
 {
   "name": "@cheevr/lang",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "An i18n library that allows integration with express and jade",
   "main": "index.js",
   "repository": {

@@ -1,4 +1,4 @@
-const config = require('cheevr-config').addDefaultConfig(__dirname, 'config/locale.js');
+const config = require('@cheevr/config').addDefaultConfig(__dirname, 'config/locale.js');
 const flat = require('flat');
 const fs = require('fs');
 const he = require('he');
