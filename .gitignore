@@ -5,3 +5,4 @@ node_modules/
 *.pig
 *.tmp
 coverage/
+.nyc_output/

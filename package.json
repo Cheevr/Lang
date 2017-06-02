@@ -1,6 +1,6 @@
 {
   "name": "@cheevr/lang",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "An i18n library that allows integration with express and jade",
   "main": "index.js",
   "repository": {
@@ -20,16 +20,16 @@
     "url": "https://github.com/Cheevr/Lang/issues"
   },
   "scripts": {
-    "test": "istanbul cover _mocha -- --recursive",
-    "test-travis": "istanbul cover _mocha --report lcovonly -- -R spec --recursive"
+    "test": "nyc --reporter=text --reporter=html mocha --recursive",
+    "test-travis": "nyc --reporter=text-lcov mocha --recursive | coveralls"
   },
   "devDependencies": {
-    "chai": "^3",
+    "chai": "^4",
     "coveralls": "^2",
     "express": "^4",
-    "istanbul": "^0.4",
     "mocha": "^3",
-    "supertest": "^2"
+    "nyc": "11",
+    "supertest": "^3"
   },
   "dependencies": {
     "@cheevr/config": "^1",
