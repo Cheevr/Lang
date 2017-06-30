@@ -220,7 +220,6 @@ class Lang {
     }
 
     _load(langPath) {
-
         let dir = path.isAbsolute(langPath) ? langPath : path.join(cwd, langPath);
         if (fs.existsSync(dir)) {
             let files = fs.readdirSync(dir);
