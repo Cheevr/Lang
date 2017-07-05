@@ -5,7 +5,7 @@ const he = require('he');
 const path = require('path');
 
 
-const cwd = process.cwd();
+const cwd = process.env.NODE_CWD || process.cwd();
 const isoRegExp = /^[a-z]{2}(-[A-Z]{2})?$/;
 const prefix = 'R.';
 const stopCond = /[^\.\w_\-]/;

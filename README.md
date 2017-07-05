@@ -128,31 +128,43 @@ request objects.
 
 ### Lang.process({string} source, {string} locale, {string} [id], {bool} [force])
 
-
-
+Allows to process any string with the given locale and return the processed string with any
+translations found. This method also supports caching results via the id parameter. If an id
+was passed in you can still force circumventing the in memory cache by setting the last
+parameter to true.
 
 ### Lang.errorHandler({ClientRequest} req, {ServerResponse} res, {Error} e, {function} next)
 
-
-
+If the middleware causes any issues this error handler is called, which by default responds with
+an error to the client request. If you want to handle errors yourself you can overwrite this
+method with a custom implementation.
 
 ### Lang.locale {string}
 
-
-
+Allows to force a locale before accessing properties on the lang object. Note that when using the
+middleware, this value will be set to whatever the incoming request specified. If you want to
+force a locale for a request set this value after the middleware has processed the request, or omit
+the middleware completely.
 
 ### Lang.dictionary {Map<string,*>}
 
-
-
+Readonly property that returns the dictionary with for the current locale. The locale can be set
+via middleware or the ```Lang.locale``` property.
 
 ### Lang.reload()
 
-
-
+Will trigger a reload of tha language files and read them from disk again.
 
 ### Lang.extend({string} dir, {string} ...paths)
 
+Allows to add a directory from which to load language files from. This is particularly useful if
+you're writing a module to be used in other projects, where there will be different **lang**
+directories configured than what your library expects. With this method you can access your
+modules directories without interfering with the root project. To make life easier the method
+support passing in multiple path components that will be joined automatically.
+
+Relative paths will be resolved to either the current working directory of the process or to
+whatever the NODE_CWD environment variable is set to.
 
 
 ## Configuration
